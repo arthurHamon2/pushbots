@@ -34,6 +34,7 @@ class Pushbots:
     KEY_PAYLOAD = 'payload'
     KEY_SCHEDULE = 'schedule'
     KEY_SETBADGECOUNT = 'setbadgecount'
+    KEY_EXPIRE = 'expire'
 
     def __init__(self, app_id, secret):
         """
@@ -345,7 +346,7 @@ class Pushbots:
 
     def push_batch(self, platform=None, msg=None, sound=None, badge=None,
                    schedule=None, tags=None, except_tags=None, alias=None,
-                   except_alias=None, payload=None, data=None):
+                   except_alias=None, payload=None, data=None, expire=None):
         """
         Push a notification to Devices under certain conditions.
         You must, at least, specify either data or the other params.
@@ -369,6 +370,8 @@ class Pushbots:
                       notification not to be pushed
         @payload    Optional (Dict). Custom fields.
         @data       Required (Dict). Data to be sent.
+        @expire     Optional timestamp to set an expire date
+                    for the notification.
         @return     (Integer, Dict). The result of self.post()
         """
 
@@ -376,7 +379,8 @@ class Pushbots:
             data = self._get_data(platform=platform, msg=msg, sound=sound,
                                   badge=badge, schedule=schedule, tags=tags,
                                   except_tags=except_tags, alias=alias,
-                                  except_alias=except_alias, payload=payload)
+                                  except_alias=except_alias, payload=payload,
+                                  expire=expire)
         api_url = 'https://api.pushbots.com/push/all'
         headers = self.headers
         return self.post(api_url=api_url, headers=headers, data=data)
@@ -431,7 +435,7 @@ class Pushbots:
                   tags=None, except_tags=None, lat=None, lng=None, active=None,
                   alias=None, except_alias=None, current_alias=None, msg=None,
                   sound=None, badge=None, schedule=None, payload=None,
-                  setbadgecount=None):
+                  setbadgecount=None, expire=None):
         """
         Constructs the dictionary (json) to be passed to the request,
         according to the fields provided.
@@ -474,4 +478,6 @@ class Pushbots:
             data[self.KEY_PAYLOAD] = payload
         if setbadgecount is not None:
             data[self.KEY_SETBADGECOUNT] = setbadgecount
+        if expire is not None:
+            data[self.KEY_EXPIRE] = expire
         return data
